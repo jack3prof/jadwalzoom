@@ -39,6 +39,17 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
         }
 
+        .header a {
+            color: #ffeb3b;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .header-info {
+            font-size: 12px;
+            color: #ffffff;
+        }
+
         /* =========================
            CONTAINER
         ========================= */
@@ -190,6 +201,7 @@
             display: none;
             z-index: 100;
             font-size: 14px;
+            white-space: nowrap;
         }
 
         /* =========================
@@ -203,6 +215,10 @@
 
             .card {
                 background: #1e293b;
+            }
+
+            label {
+                color: #cbd5e1;
             }
 
             input {
@@ -224,50 +240,111 @@
 
 <body>
 
-<div class="header">
-  Ruang Zoom DK3<br>
-  <a href="https://tiny.cc/rapatbpwdk3" target="_blank" style="color: #ffeb3b; text-decoration: underline; font-weight: bold;">
-    Klik disini untuk masuk ke Zoom
-  </a><br>
-  <span style="font-size: 12px; color: #ffffff;">
-    Bila tidak bisa langsung klik, tekan 3 detik, pilih Copy URL, lalu paste di chrome.
-  </span>
-</div>
+	<div class="header">
+	  Ruang Zoom DK3<br>
+	  <a href="https://tiny.cc/rapatbpwdk3" target="_blank" style="color: #ffeb3b; text-decoration: underline; font-weight: bold;">
+		Klik disini untuk masuk ke Zoom
+	  </a><br>
+	  <span style="font-size: 12px; color: #ffffff;">
+		Bila tidak bisa langsung klik, tekan 3 detik, pilih Copy URL, lalu paste di chrome.
+	  </span>
+	</div>
+
     <div class="container">
 
-        <!-- FORM INPUT -->
+        <!-- =========================
+             FORM INPUT
+        ========================= -->
         <div class="card">
-            <label>Pengguna - ID Sektor + ID Kelas + ID Anggota</label>
-            <input id="pengguna" type="text" placeholder="Contoh: RWIA307TUT01" autocomplete="off">
+
+            <label>
+                Pengguna - ID Sektor + ID Kelas + ID Anggota
+            </label>
+
+            <!--
+                Datalist membuat pengguna yang pernah digunakan
+                bisa dipilih kembali.
+            -->
+            <input
+                id="pengguna"
+                type="text"
+                placeholder="Contoh: RWIA307TUT01"
+                autocomplete="off"
+                list="daftarPengguna"
+            >
+
+            <datalist id="daftarPengguna"></datalist>
+
 
             <label>Acara</label>
-            <input id="acara" type="text" placeholder="Nama acara">
+
+            <input
+                id="acara"
+                type="text"
+                placeholder="Nama acara"
+            >
+
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
                 <div>
                     <label>Tanggal</label>
-                    <input id="tanggal" type="date">
+
+                    <input
+                        id="tanggal"
+                        type="date"
+                    >
                 </div>
+
                 <div>
                     <label>Jam</label>
-                    <input id="jam" type="time">
+
+                    <input
+                        id="jam"
+                        type="time"
+                    >
                 </div>
+
             </div>
 
-            <button id="btnSimpan" onclick="simpan()">Simpan</button>
+
+            <button
+                id="btnSimpan"
+                onclick="simpan()"
+            >
+                Simpan
+            </button>
+
         </div>
 
-        <!-- DATA TABLE -->
-        <div class="card">
-            <input class="search" id="cari" type="text" placeholder="🔍 Cari pengguna atau acara" oninput="filterData()">
 
-            <div class="loading" id="loading">
+        <!-- =========================
+             DATA TABLE
+        ========================= -->
+        <div class="card">
+
+            <input
+                class="search"
+                id="cari"
+                type="text"
+                placeholder="🔍 Cari pengguna atau acara"
+                oninput="filterData()"
+            >
+
+
+            <div
+                class="loading"
+                id="loading"
+            >
                 <div class="spinner"></div>
                 <p>Memuat data...</p>
             </div>
 
+
             <div class="table-wrap">
+
                 <table>
+
                     <thead>
                         <tr>
                             <th>Pengguna</th>
@@ -276,218 +353,678 @@
                             <th>Jam</th>
                         </tr>
                     </thead>
+
                     <tbody id="tabelData"></tbody>
+
                 </table>
+
             </div>
+
         </div>
 
     </div>
 
-    <!-- SNACKBAR -->
-    <div class="snackbar" id="snackbar"></div>
+
+    <!-- =========================
+         SNACKBAR
+    ========================= -->
+    <div
+        class="snackbar"
+        id="snackbar"
+    ></div>
+
 
     <script>
+
         // =========================
         // KONFIGURASI API
         // =========================
-        const API = "https://script.google.com/macros/s/AKfycbw9Yni2qbSeK1MQd-zig70h840f0Get2Os70M54aI7TKNuNA44GZT9p_Ad8yiMct2uFww/exec";
 
+        const API =
+            "https://script.google.com/macros/s/AKfycbw9Yni2qbSeK1MQd-zig70h840f0Get2Os70M54aI7TKNuNA44GZT9p_Ad8yiMct2uFww/exec";
+
+
+        // Semua data dari server
         let semuaData = [];
+
 
         // =========================
         // SAAT HALAMAN DIBUKA
         // =========================
+
         document.addEventListener("DOMContentLoaded", function () {
+
             setDefaultTanggal();
+
             loadData();
 
-            // Otomatis uppercase & hapus spasi pada pengguna
-            document.getElementById("pengguna").addEventListener("input", function () {
-                this.value = this.value.replace(/\s/g, "").toUpperCase();
-            });
+            // Ambil daftar pengguna yang pernah digunakan
+            loadDaftarPengguna();
+
+
+            // =========================
+            // OTOMATIS UPPERCASE
+            // =========================
+
+            document
+                .getElementById("pengguna")
+                .addEventListener("input", function () {
+
+                    this.value = this.value
+                        .replace(/\s/g, "")
+                        .toUpperCase();
+
+                });
+
         });
+
 
         // =========================
         // DEFAULT TANGGAL HARI INI
         // =========================
-        function setDefaultTanggal() {
-            let d = new Date();
-            let yyyy = d.getFullYear();
-            let mm = String(d.getMonth() + 1).padStart(2, "0");
-            let dd = String(d.getDate()).padStart(2, "0");
 
-            document.getElementById("tanggal").value = `${yyyy}-${mm}-${dd}`;
+        function setDefaultTanggal() {
+
+            let d = new Date();
+
+            let yyyy = d.getFullYear();
+
+            let mm = String(
+                d.getMonth() + 1
+            ).padStart(2, "0");
+
+            let dd = String(
+                d.getDate()
+            ).padStart(2, "0");
+
+
+            document.getElementById("tanggal").value =
+                `${yyyy}-${mm}-${dd}`;
+
         }
 
-        // =========================
-        // AMBIL DATA
-        // =========================
-        async function loadData() {
-            tampilLoading(true);
 
-            try {
-                const response = await fetch(API + "?action=list");
-                semuaData = await response.json();
-                tampilTabel(semuaData);
-            } catch (e) {
-                snackbar("Gagal mengambil data");
-                console.error(e);
+        // =========================
+        // LOAD DAFTAR PENGGUNA
+        // =========================
+
+        function loadDaftarPengguna() {
+
+            let daftar = JSON.parse(
+                localStorage.getItem("daftarPenggunaZoomRW") || "[]"
+            );
+
+
+            let datalist =
+                document.getElementById("daftarPengguna");
+
+
+            datalist.innerHTML = "";
+
+
+            daftar.forEach(function (pengguna) {
+
+                let option =
+                    document.createElement("option");
+
+                option.value = pengguna;
+
+                datalist.appendChild(option);
+
+            });
+
+        }
+
+
+        // =========================
+        // SIMPAN PENGGUNA KE BROWSER
+        // =========================
+
+        function simpanPengguna(pengguna) {
+
+            let daftar = JSON.parse(
+                localStorage.getItem("daftarPenggunaZoomRW") || "[]"
+            );
+
+
+            // Jika belum ada, tambahkan
+            if (!daftar.includes(pengguna)) {
+
+                daftar.push(pengguna);
+
+                localStorage.setItem(
+                    "daftarPenggunaZoomRW",
+                    JSON.stringify(daftar)
+                );
+
             }
 
-            tampilLoading(false);
+
+            // Refresh daftar pilihan
+            loadDaftarPengguna();
+
         }
+
+
+        // =========================
+        // AMBIL DATA DARI SERVER
+        // =========================
+
+        async function loadData() {
+
+            tampilLoading(true);
+
+
+            try {
+
+                const response =
+                    await fetch(API + "?action=list");
+
+
+                semuaData =
+                    await response.json();
+
+
+                tampilTabel(semuaData);
+
+            }
+
+            catch (e) {
+
+                snackbar(
+                    "Gagal mengambil data"
+                );
+
+                console.error(e);
+
+            }
+
+
+            tampilLoading(false);
+
+        }
+
+
+        // =========================
+        // FORMAT JAM
+        // =========================
+function formatJam(jam) {
+
+if (!jam) return "";
+
+let str = String(jam);
+
+let angkajam = Number(str.substring(11, 13));
+let angkamenit = Number(str.substring(14, 16));
+
+let totalMenit = angkajam * 60 + angkamenit + (7 * 60) + 8;
+
+let jamBaru = Math.floor(totalMenit / 60) % 24;
+let menitBaru = totalMenit % 60;
+
+return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")}`;
+
+}
+
 
         // =========================
         // TAMPIL TABEL
         // =========================
+
         function tampilTabel(data) {
+
             let html = "";
 
-            if (!Array.isArray(data) || data.length === 0) {
+
+            if (
+                !Array.isArray(data) ||
+                data.length === 0
+            ) {
+
                 html = `
-                <tr>
-                    <td colspan="4" style="text-align:center">Tidak ada jadwal</td>
-                </tr>`;
-            } else {
-                data.forEach(function (r) {
-                    html += `
                     <tr>
-                        <td>${aman(r.pengguna)}</td>
-                        <td>${aman(r.acara)}</td>
-                        <td>${r.tanggal}</td>
-                        <td>${r.jam}</td>
-                    </tr>`;
-                });
+                        <td
+                            colspan="4"
+                            style="text-align:center"
+                        >
+                            Tidak ada jadwal
+                        </td>
+                    </tr>
+                `;
+
             }
 
-            document.getElementById("tabelData").innerHTML = html;
+            else {
+
+                data.forEach(function (r) {
+
+                    html += `
+                        <tr>
+
+                            <td>
+                                ${aman(r.pengguna)}
+                            </td>
+
+                            <td>
+                                ${aman(r.acara)}
+                            </td>
+
+                            <td>
+                                ${aman(r.tanggal)}
+                            </td>
+
+                            <td>
+                                ${formatJam(r.jam)}
+                            </td>
+
+                        </tr>
+                    `;
+
+                });
+
+            }
+
+
+            document.getElementById("tabelData").innerHTML =
+                html;
+
         }
+
 
         // =========================
         // FILTER PENCARIAN
         // =========================
-        function filterData() {
-            let keyword = document.getElementById("cari").value.toLowerCase();
 
-            let hasil = semuaData.filter(function (r) {
-                return (
-                    r.pengguna.toLowerCase().includes(keyword) ||
-                    r.acara.toLowerCase().includes(keyword)
-                );
-            });
+        function filterData() {
+
+            let keyword =
+                document
+                    .getElementById("cari")
+                    .value
+                    .toLowerCase();
+
+
+            let hasil =
+                semuaData.filter(function (r) {
+
+                    let pengguna =
+                        (r.pengguna || "")
+                            .toString()
+                            .toLowerCase();
+
+                    let acara =
+                        (r.acara || "")
+                            .toString()
+                            .toLowerCase();
+
+
+                    return (
+                        pengguna.includes(keyword) ||
+                        acara.includes(keyword)
+                    );
+
+                });
+
 
             tampilTabel(hasil);
+
         }
+
 
         // =========================
         // SIMPAN DATA
         // =========================
+
         async function simpan() {
-            let pengguna = document.getElementById("pengguna").value.replace(/\s/g, "").toUpperCase();
+
+            // =========================
+            // PENGGUNA
+            // =========================
+
+            let pengguna =
+                document
+                    .getElementById("pengguna")
+                    .value
+                    .replace(/\s/g, "")
+                    .toUpperCase();
+
 
             /*
-               Format: 4 huruf + 3 angka + 3 huruf + 2 angka
-               Contoh: ABCD123EFG45
+                Format:
+
+                4 huruf
+                +
+                3 angka
+                +
+                3 huruf
+                +
+                2 angka
+
+                Contoh:
+                RWIA307TUT01
             */
-            let regex = /^[A-Z]{4}[0-9]{3}[A-Z]{3}[0-9]{2}$/;
+
+            let regex =
+                /^[A-Z]{4}\d{3}[A-Z]{3}\d{2}$/;
+
 
             if (!regex.test(pengguna)) {
-                errorInput("pengguna", "Format pengguna salah");
+
+                errorInput(
+                    "pengguna",
+                    "Format pengguna salah"
+                );
+
                 return;
+
             }
 
-            let acara = document.getElementById("acara").value.trim();
+
+            // =========================
+            // ACARA
+            // =========================
+
+            let acara =
+                document
+                    .getElementById("acara")
+                    .value
+                    .trim();
+
+
             if (acara === "") {
-                errorInput("acara", "Acara harus diisi");
+
+                errorInput(
+                    "acara",
+                    "Acara harus diisi"
+                );
+
                 return;
+
             }
 
-            let tanggalInput = document.getElementById("tanggal").value;
-            let jam = document.getElementById("jam").value;
+
+            // =========================
+            // TANGGAL
+            // =========================
+
+            let tanggalInput =
+                document
+                    .getElementById("tanggal")
+                    .value;
+
 
             if (!tanggalInput) {
-                snackbar("Tanggal belum dipilih");
+
+                snackbar(
+                    "Tanggal belum dipilih"
+                );
+
                 return;
+
             }
+
+
+            // =========================
+            // JAM
+            // =========================
+
+            let jam =
+                document
+                    .getElementById("jam")
+                    .value;
+
 
             if (!jam) {
-                snackbar("Jam belum dipilih");
+
+                snackbar(
+                    "Jam belum dipilih"
+                );
+
                 return;
+
             }
 
-            // yyyy-mm-dd menjadi dd/mm/yyyy
-            let p = tanggalInput.split("-");
-            let tanggal = `${p[2]}/${p[1]}/${p[0]}`;
 
-            let tombol = document.getElementById("btnSimpan");
+            // =========================
+            // FORMAT TANGGAL
+            // =========================
+
+            let p =
+                tanggalInput.split("-");
+
+
+            let tanggal =
+                `${p[2]}/${p[1]}/${p[0]}`;
+
+
+            // =========================
+            // TOMBOL
+            // =========================
+
+            let tombol =
+                document.getElementById(
+                    "btnSimpan"
+                );
+
+
             tombol.disabled = true;
-            tombol.innerHTML = "Menyimpan...";
+
+            tombol.innerHTML =
+                "Menyimpan...";
+
 
             try {
-                // Menyusun query parameter untuk dikirimkan via GET
-                const params = new URLSearchParams({
-                    action: "simpan",
-                    pengguna: pengguna,
-                    acara: acara,
-                    tanggal: tanggal,
-                    jam: jam
-                });
 
-                let response = await fetch(`${API}?${params.toString()}`);
-                let hasil = await response.json();
+                // =========================
+                // PARAMETER API
+                // =========================
+
+                const params =
+                    new URLSearchParams({
+
+                        action: "simpan",
+
+                        pengguna: pengguna,
+
+                        acara: acara,
+
+                        tanggal: tanggal,
+
+                        jam: jam
+
+                    });
+
+
+                // =========================
+                // KIRIM KE GOOGLE APPS SCRIPT
+                // =========================
+
+                let response =
+                    await fetch(
+                        `${API}?${params.toString()}`
+                    );
+
+
+                let hasil =
+                    await response.json();
+
+
+                // =========================
+                // BERHASIL
+                // =========================
 
                 if (hasil.success) {
-                    snackbar("Data berhasil disimpan");
-                    document.getElementById("acara").value = "";
+
+                    /*
+                     * SIMPAN PENGGUNA
+                     *
+                     * Pengguna yang baru dimasukkan
+                     * akan masuk ke daftar pilihan.
+                     */
+
+                    simpanPengguna(
+                        pengguna
+                    );
+
+
+                    snackbar(
+                        "Data berhasil disimpan"
+                    );
+
+
+                    /*
+                     * Kosongkan acara.
+                     *
+                     * Pengguna TIDAK dikosongkan
+                     * supaya input berikutnya lebih cepat.
+                     */
+
+                    document
+                        .getElementById("acara")
+                        .value = "";
+
+
+                    /*
+                     * Pengguna tetap berada
+                     * di kolom input.
+                     */
+
+                    document
+                        .getElementById("pengguna")
+                        .value = pengguna;
+
+
+                    // Refresh data tabel
                     loadData();
-                } else {
-                    snackbar(hasil.message || "Gagal menyimpan");
+
                 }
 
-            } catch (e) {
-                snackbar("Server tidak merespon");
-                console.error(e);
+                else {
+
+                    snackbar(
+                        hasil.message ||
+                        "Gagal menyimpan"
+                    );
+
+                }
+
             }
 
+            catch (e) {
+
+                snackbar(
+                    "Server tidak merespon"
+                );
+
+                console.error(e);
+
+            }
+
+
+            // =========================
+            // AKTIFKAN KEMBALI TOMBOL
+            // =========================
+
             tombol.disabled = false;
-            tombol.innerHTML = "Simpan";
+
+            tombol.innerHTML =
+                "Simpan";
+
         }
 
+
         // =========================
-        // UTILITAS
+        // LOADING
         // =========================
+
         function tampilLoading(status) {
-            document.getElementById("loading").style.display = status ? "block" : "none";
+
+            document
+                .getElementById("loading")
+                .style.display =
+                status
+                    ? "block"
+                    : "none";
+
         }
+
+
+        // =========================
+        // SNACKBAR
+        // =========================
 
         function snackbar(text) {
-            let s = document.getElementById("snackbar");
-            s.innerHTML = text;
-            s.style.display = "block";
+
+            let s =
+                document.getElementById(
+                    "snackbar"
+                );
+
+
+            s.innerHTML = aman(text);
+
+            s.style.display =
+                "block";
+
 
             setTimeout(function () {
-                s.style.display = "none";
+
+                s.style.display =
+                    "none";
+
             }, 2500);
+
         }
+
+
+        // =========================
+        // ERROR INPUT
+        // =========================
 
         function errorInput(id, msg) {
-            let el = document.getElementById(id);
+
+            let el =
+                document.getElementById(id);
+
+
             el.classList.add("error");
+
+
             snackbar(msg);
 
+
             setTimeout(function () {
-                el.classList.remove("error");
+
+                el.classList.remove(
+                    "error"
+                );
+
             }, 2000);
+
         }
 
+
+        // =========================
+        // AMANKAN HTML
+        // =========================
+
         function aman(text) {
+
             if (!text) return "";
+
+
             return text
                 .toString()
+                .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
         }
+
     </script>
+
 </body>
 
 </html>
