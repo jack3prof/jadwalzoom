@@ -8,7 +8,7 @@
 
     <style>
         /* =========================
-           RESET
+            RESET
         ========================= */
         * {
             box-sizing: border-box;
@@ -24,7 +24,7 @@
         }
 
         /* =========================
-           HEADER
+            HEADER
         ========================= */
         .header {
             position: sticky;
@@ -51,7 +51,7 @@
         }
 
         /* =========================
-           CONTAINER
+            CONTAINER
         ========================= */
         .container {
             max-width: 600px;
@@ -60,7 +60,7 @@
         }
 
         /* =========================
-           CARD
+            CARD
         ========================= */
         .card {
             background: white;
@@ -71,7 +71,7 @@
         }
 
         /* =========================
-           FORM
+            FORM
         ========================= */
         label {
             display: block;
@@ -100,7 +100,7 @@
         }
 
         /* =========================
-           BUTTON
+            BUTTON
         ========================= */
         button {
             width: 100%;
@@ -119,14 +119,29 @@
         }
 
         /* =========================
-           SEARCH
+            INFO KETERANGAN TABEL
+        ========================= */
+        .info-tabel {
+            font-size: 13px;
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #ffcdd2;
+        }
+
+        /* =========================
+            SEARCH
         ========================= */
         .search {
             margin-bottom: 10px;
         }
 
         /* =========================
-           TABLE
+            TABLE
         ========================= */
         .table-wrap {
             overflow: auto;
@@ -162,7 +177,7 @@
         }
 
         /* =========================
-           LOADING
+            LOADING
         ========================= */
         .loading {
             display: none;
@@ -187,7 +202,7 @@
         }
 
         /* =========================
-           SNACKBAR
+            SNACKBAR
         ========================= */
         .snackbar {
             position: fixed;
@@ -205,7 +220,7 @@
         }
 
         /* =========================
-           DARK MODE
+            DARK MODE
         ========================= */
         @media(prefers-color-scheme:dark) {
             body {
@@ -234,21 +249,27 @@
             tr:nth-child(even) {
                 background: #334155;
             }
+
+            .info-tabel {
+                background: #451a03;
+                color: #fed7aa;
+                border-color: #78350f;
+            }
         }
     </style>
 </head>
 
 <body>
 
-	<div class="header">
-	  Ruang Zoom DK3<br>
-	  <a href="https://tiny.cc/rapatbpwdk3" target="_blank" style="color: #ffeb3b; text-decoration: underline; font-weight: bold;">
-		Klik disini untuk masuk ke Zoom
-	  </a><br>
-	  <span style="font-size: 12px; color: #ffffff;">
-		Bila tidak bisa langsung klik, tekan 3 detik, pilih Copy URL, lalu paste di chrome.
-	  </span>
-	</div>
+    <div class="header">
+      Ruang Zoom DK3<br>
+      <a href="https://tiny.cc/rapatbpwdk3" target="_blank" style="color: #ffeb3b; text-decoration: underline; font-weight: bold;">
+        Klik disini untuk masuk ke Zoom
+      </a><br>
+      <span style="font-size: 12px; color: #ffffff;">
+        Bila tidak bisa langsung klik, tekan 3 detik, pilih Copy URL, lalu paste di chrome.
+      </span>
+    </div>
 
     <div class="container">
 
@@ -261,10 +282,6 @@
                 Pengguna - ID Sektor + ID Kelas + ID Anggota
             </label>
 
-            <!--
-                Datalist membuat pengguna yang pernah digunakan
-                bisa dipilih kembali.
-            -->
             <input
                 id="pengguna"
                 type="text"
@@ -275,7 +292,6 @@
 
             <datalist id="daftarPengguna"></datalist>
 
-
             <label>Acara</label>
 
             <input
@@ -283,7 +299,6 @@
                 type="text"
                 placeholder="Nama acara"
             >
-
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
 
@@ -307,7 +322,6 @@
 
             </div>
 
-
             <button
                 id="btnSimpan"
                 onclick="simpan()"
@@ -317,11 +331,15 @@
 
         </div>
 
-
         <!-- =========================
              DATA TABLE
         ========================= -->
         <div class="card">
+
+            <!-- Keterangan Tambahan -->
+            <div class="info-tabel">
+                ⚠️ Bila acara bertabrakan, hubungi WA <strong>08158839782</strong> untuk dibuatkan breakout room.
+            </div>
 
             <input
                 class="search"
@@ -331,7 +349,6 @@
                 oninput="filterData()"
             >
 
-
             <div
                 class="loading"
                 id="loading"
@@ -339,7 +356,6 @@
                 <div class="spinner"></div>
                 <p>Memuat data...</p>
             </div>
-
 
             <div class="table-wrap">
 
@@ -364,7 +380,6 @@
 
     </div>
 
-
     <!-- =========================
          SNACKBAR
     ========================= -->
@@ -372,7 +387,6 @@
         class="snackbar"
         id="snackbar"
     ></div>
-
 
     <script>
 
@@ -383,10 +397,8 @@
         const API =
             "https://script.google.com/macros/s/AKfycbw9Yni2qbSeK1MQd-zig70h840f0Get2Os70M54aI7TKNuNA44GZT9p_Ad8yiMct2uFww/exec";
 
-
         // Semua data dari server
         let semuaData = [];
-
 
         // =========================
         // SAAT HALAMAN DIBUKA
@@ -398,13 +410,7 @@
 
             loadData();
 
-            // Ambil daftar pengguna yang pernah digunakan
             loadDaftarPengguna();
-
-
-            // =========================
-            // OTOMATIS UPPERCASE
-            // =========================
 
             document
                 .getElementById("pengguna")
@@ -417,7 +423,6 @@
                 });
 
         });
-
 
         // =========================
         // DEFAULT TANGGAL HARI INI
@@ -437,12 +442,10 @@
                 d.getDate()
             ).padStart(2, "0");
 
-
             document.getElementById("tanggal").value =
                 `${yyyy}-${mm}-${dd}`;
 
         }
-
 
         // =========================
         // LOAD DAFTAR PENGGUNA
@@ -454,13 +457,10 @@
                 localStorage.getItem("daftarPenggunaZoomRW") || "[]"
             );
 
-
             let datalist =
                 document.getElementById("daftarPengguna");
 
-
             datalist.innerHTML = "";
-
 
             daftar.forEach(function (pengguna) {
 
@@ -475,7 +475,6 @@
 
         }
 
-
         // =========================
         // SIMPAN PENGGUNA KE BROWSER
         // =========================
@@ -486,8 +485,6 @@
                 localStorage.getItem("daftarPenggunaZoomRW") || "[]"
             );
 
-
-            // Jika belum ada, tambahkan
             if (!daftar.includes(pengguna)) {
 
                 daftar.push(pengguna);
@@ -499,12 +496,9 @@
 
             }
 
-
-            // Refresh daftar pilihan
             loadDaftarPengguna();
 
         }
-
 
         // =========================
         // AMBIL DATA DARI SERVER
@@ -514,16 +508,13 @@
 
             tampilLoading(true);
 
-
             try {
 
                 const response =
                     await fetch(API + "?action=list");
 
-
                 semuaData =
                     await response.json();
-
 
                 tampilTabel(semuaData);
 
@@ -539,33 +530,30 @@
 
             }
 
-
             tampilLoading(false);
 
         }
 
-
         // =========================
         // FORMAT JAM
         // =========================
-function formatJam(jam) {
+        function formatJam(jam) {
 
-if (!jam) return "";
+            if (!jam) return "";
 
-let str = String(jam);
+            let str = String(jam);
 
-let angkajam = Number(str.substring(11, 13));
-let angkamenit = Number(str.substring(14, 16));
+            let angkajam = Number(str.substring(11, 13));
+            let angkamenit = Number(str.substring(14, 16));
 
-let totalMenit = angkajam * 60 + angkamenit + (7 * 60) + 8;
+            let totalMenit = angkajam * 60 + angkamenit + (7 * 60) + 8;
 
-let jamBaru = Math.floor(totalMenit / 60) % 24;
-let menitBaru = totalMenit % 60;
+            let jamBaru = Math.floor(totalMenit / 60) % 24;
+            let menitBaru = totalMenit % 60;
 
-return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")}`;
+            return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")}`;
 
-}
-
+        }
 
         // =========================
         // TAMPIL TABEL
@@ -574,7 +562,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
         function tampilTabel(data) {
 
             let html = "";
-
 
             if (
                 !Array.isArray(data) ||
@@ -624,12 +611,10 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
             document.getElementById("tabelData").innerHTML =
                 html;
 
         }
-
 
         // =========================
         // FILTER PENCARIAN
@@ -642,7 +627,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
                     .getElementById("cari")
                     .value
                     .toLowerCase();
-
 
             let hasil =
                 semuaData.filter(function (r) {
@@ -657,7 +641,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
                             .toString()
                             .toLowerCase();
 
-
                     return (
                         pengguna.includes(keyword) ||
                         acara.includes(keyword)
@@ -665,21 +648,15 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
                 });
 
-
             tampilTabel(hasil);
 
         }
-
 
         // =========================
         // SIMPAN DATA
         // =========================
 
         async function simpan() {
-
-            // =========================
-            // PENGGUNA
-            // =========================
 
             let pengguna =
                 document
@@ -688,25 +665,8 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
                     .replace(/\s/g, "")
                     .toUpperCase();
 
-
-            /*
-                Format:
-
-                4 huruf
-                +
-                3 angka
-                +
-                3 huruf
-                +
-                2 angka
-
-                Contoh:
-                RWIA307TUT01
-            */
-
             let regex =
                 /^[A-Z]{4}\d{3}[A-Z]{3}\d{2}$/;
-
 
             if (!regex.test(pengguna)) {
 
@@ -719,17 +679,11 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
-            // =========================
-            // ACARA
-            // =========================
-
             let acara =
                 document
                     .getElementById("acara")
                     .value
                     .trim();
-
 
             if (acara === "") {
 
@@ -742,16 +696,10 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
-            // =========================
-            // TANGGAL
-            // =========================
-
             let tanggalInput =
                 document
                     .getElementById("tanggal")
                     .value;
-
 
             if (!tanggalInput) {
 
@@ -763,16 +711,10 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
-            // =========================
-            // JAM
-            // =========================
-
             let jam =
                 document
                     .getElementById("jam")
                     .value;
-
 
             if (!jam) {
 
@@ -784,40 +726,23 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
-            // =========================
-            // FORMAT TANGGAL
-            // =========================
-
             let p =
                 tanggalInput.split("-");
 
-
             let tanggal =
                 `${p[2]}/${p[1]}/${p[0]}`;
-
-
-            // =========================
-            // TOMBOL
-            // =========================
 
             let tombol =
                 document.getElementById(
                     "btnSimpan"
                 );
 
-
             tombol.disabled = true;
 
             tombol.innerHTML =
                 "Menyimpan...";
 
-
             try {
-
-                // =========================
-                // PARAMETER API
-                // =========================
 
                 const params =
                     new URLSearchParams({
@@ -834,67 +759,32 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
                     });
 
-
-                // =========================
-                // KIRIM KE GOOGLE APPS SCRIPT
-                // =========================
-
                 let response =
                     await fetch(
                         `${API}?${params.toString()}`
                     );
 
-
                 let hasil =
                     await response.json();
 
-
-                // =========================
-                // BERHASIL
-                // =========================
-
                 if (hasil.success) {
-
-                    /*
-                     * SIMPAN PENGGUNA
-                     *
-                     * Pengguna yang baru dimasukkan
-                     * akan masuk ke daftar pilihan.
-                     */
 
                     simpanPengguna(
                         pengguna
                     );
 
-
                     snackbar(
                         "Data berhasil disimpan"
                     );
-
-
-                    /*
-                     * Kosongkan acara.
-                     *
-                     * Pengguna TIDAK dikosongkan
-                     * supaya input berikutnya lebih cepat.
-                     */
 
                     document
                         .getElementById("acara")
                         .value = "";
 
-
-                    /*
-                     * Pengguna tetap berada
-                     * di kolom input.
-                     */
-
                     document
                         .getElementById("pengguna")
                         .value = pengguna;
 
-
-                    // Refresh data tabel
                     loadData();
 
                 }
@@ -920,18 +810,12 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
             }
 
-
-            // =========================
-            // AKTIFKAN KEMBALI TOMBOL
-            // =========================
-
             tombol.disabled = false;
 
             tombol.innerHTML =
                 "Simpan";
 
         }
-
 
         // =========================
         // LOADING
@@ -948,7 +832,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
         }
 
-
         // =========================
         // SNACKBAR
         // =========================
@@ -960,12 +843,10 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
                     "snackbar"
                 );
 
-
             s.innerHTML = aman(text);
 
             s.style.display =
                 "block";
-
 
             setTimeout(function () {
 
@@ -976,7 +857,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
         }
 
-
         // =========================
         // ERROR INPUT
         // =========================
@@ -986,12 +866,9 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
             let el =
                 document.getElementById(id);
 
-
             el.classList.add("error");
 
-
             snackbar(msg);
-
 
             setTimeout(function () {
 
@@ -1003,7 +880,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
 
         }
 
-
         // =========================
         // AMANKAN HTML
         // =========================
@@ -1011,7 +887,6 @@ return `${String(jamBaru).padStart(2, "0")}:${String(menitBaru).padStart(2, "0")
         function aman(text) {
 
             if (!text) return "";
-
 
             return text
                 .toString()
