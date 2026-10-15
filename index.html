@@ -441,18 +441,15 @@
         // TOGGLE FORM INPUT
         // =========================
 
-        function toggleForm() {
-            let formContainer = document.getElementById("formContainer");
-            let btnToggle = document.getElementById("btnToggleForm");
+function toggleForm() {
+    let btnToggle = document.getElementById("btnToggleForm");
+    let formContainer = document.getElementById("formContainer");
 
-            if (formContainer.style.display === "none") {
-                formContainer.style.display = "block";
-                btnToggle.innerHTML = "➖ Tutup Form Input";
-            } else {
-                formContainer.style.display = "none";
-                btnToggle.innerHTML = "➕ Input Jadwal";
-            }
-        }
+    // Sembunyikan tombol "Input Jadwal"
+    btnToggle.style.display = "none";
+    // Tampilkan form isian sampai simpan
+    formContainer.style.display = "block";
+}
 
         // =========================
         // DEFAULT TANGGAL HARI INI
